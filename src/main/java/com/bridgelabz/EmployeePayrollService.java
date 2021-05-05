@@ -1,10 +1,14 @@
 package com.bridgelabz;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
 public class EmployeePayrollService {
+
     public enum IOService{CONSOLE_IO, FILE_IO, DB_IO,  REST_IO}
 
     private List<EmployeePayrollData> employeePayrollList;
@@ -40,6 +44,14 @@ public class EmployeePayrollService {
         System.out.println("\nWriting Employee Payroll Roaster to Console\n" + employeePayrollList);
         else if(ioService.equals(IOService.FILE_IO))
         new EmployeePayrollFileIOService().writeData(employeePayrollList);
+    }
+    public void printData(IOService ioService) {
+        try {
+            Files.lines(new File("payroll-file.txt").toPath())
+                    .forEach(System.out::println);
+        }catch (IOException e){
+            e.printStackTrace();
+        }
     }
 }
 
