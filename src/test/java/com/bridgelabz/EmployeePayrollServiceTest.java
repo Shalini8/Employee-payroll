@@ -4,6 +4,9 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class EmployeePayrollServiceTest {
     @Test
@@ -19,8 +22,12 @@ public class EmployeePayrollServiceTest {
         employeePayrollService.writeEmployeePayrollData(EmployeePayrollService.IOService.FILE_IO);
         employeePayrollService.printData(EmployeePayrollService.IOService.FILE_IO);
         long entries = employeePayrollService.countEntries(EmployeePayrollService.IOService.FILE_IO);
-         Assertions.assertEquals(3,entries);
+         assertEquals(3,entries);
     }
-
-   
+    @Test
+    public void givenEmployeePayrollInDB_WhenRetrieved_ShouldMatchEmployeeCount() {
+        EmployeePayrollService employeePayrollService = new EmployeePayrollService();
+        List<EmployeePayrollData> employeePayrollData = employeePayrollService.readData(EmployeePayrollService.IOService.DB_IO);
+        assertEquals(7, employeePayrollData.size());
+    }
 }
