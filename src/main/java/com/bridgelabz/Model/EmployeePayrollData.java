@@ -1,4 +1,4 @@
-package com.bridgelabz;
+package com.bridgelabz.Model;
 
 import java.time.LocalDate;
 import java.util.Objects;

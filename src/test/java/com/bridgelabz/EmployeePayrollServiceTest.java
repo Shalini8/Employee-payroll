@@ -1,5 +1,8 @@
 package com.bridgelabz;
 
+import com.bridgelabz.Exceptions.EmployeePayrollException;
+import com.bridgelabz.Model.EmployeePayrollData;
+import com.bridgelabz.Service.EmployeePayrollService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -7,6 +10,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class EmployeePayrollServiceTest {
     @Test
@@ -28,6 +32,14 @@ public class EmployeePayrollServiceTest {
     public void givenEmployeePayrollInDB_WhenRetrieved_ShouldMatchEmployeeCount() {
         EmployeePayrollService employeePayrollService = new EmployeePayrollService();
         List<EmployeePayrollData> employeePayrollData = employeePayrollService.readData(EmployeePayrollService.IOService.DB_IO);
-        assertEquals(7, employeePayrollData.size());
+        assertEquals(5, employeePayrollData.size());
+    }
+    @Test
+    public void givenNewSalaryForEmployee_WhenUpdated_ShouldSyncWithDatabase() throws EmployeePayrollException {
+        EmployeePayrollService employeePayrollService = new EmployeePayrollService();
+        List<EmployeePayrollData> employeePayrollData = employeePayrollService.readData(EmployeePayrollService.IOService.DB_IO);
+        employeePayrollService.updateEmployeeSalary("Meena",3000000.00);
+        boolean result = employeePayrollService.checkEmployeePayrollInSyncWithDB("Meena");
+        assertTrue(result);
     }
 }

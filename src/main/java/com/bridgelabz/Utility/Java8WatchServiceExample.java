@@ -1,4 +1,4 @@
-package com.bridgelabz;
+package com.bridgelabz.Utility;
 
 import java.io.IOException;
 import java.nio.file.*;
@@ -13,7 +13,7 @@ public class Java8WatchServiceExample {
     private final WatchService watcher;
     private final Map<WatchKey, Path> dirWatchers;
 
-    Java8WatchServiceExample(Path dir) throws IOException {
+    public Java8WatchServiceExample(Path dir) throws IOException {
         this.watcher = FileSystems.getDefault().newWatchService();
         this.dirWatchers = new HashMap<WatchKey , Path>();
         scanAndRegisterDirectories(dir);
@@ -35,7 +35,7 @@ public class Java8WatchServiceExample {
         });
     }
     @SuppressWarnings({"rawtypes", "unchecked"})
-    void processEvents(){
+    public void processEvents(){
         while (true){
             WatchKey key;
             try {

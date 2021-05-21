@@ -1,18 +1,25 @@
-package com.bridgelabz;
+package com.bridgelabz.Service;
+
+import com.bridgelabz.Exceptions.EmployeePayrollException;
+import com.bridgelabz.Model.EmployeePayrollData;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
 public class EmployeePayrollService {
+
     public enum IOService {CONSOLE_IO, FILE_IO, DB_IO, REST_IO}
 
-    private List<EmployeePayrollData> employeePayrollList;
+    public List<EmployeePayrollData> employeePayrollList;
+    private EmployeePayrollDBService employeePayrollDBService;
 
     public EmployeePayrollService() {
+        employeePayrollDBService = EmployeePayrollDBService.getInstance();
     }
 
     public EmployeePayrollService(List<EmployeePayrollData> employeePayrollList) {
+        this();
         this.employeePayrollList = employeePayrollList;
     }
 
@@ -56,14 +63,43 @@ public class EmployeePayrollService {
     }
 
     public List<EmployeePayrollData> readData(IOService ioService) {
-        if (ioService.equals(IOService.FILE_IO))
+        if(ioService.equals(IOService.FILE_IO))
             return new EmployeePayrollFileIOService().readData();
-        else if (ioService.equals(IOService.DB_IO))
-            return new EmployeePayrollDBService().readData();
+        else if(ioService.equals(IOService.DB_IO)) {
+            employeePayrollList = employeePayrollDBService.readData();
+            return employeePayrollList;
+        }
         else
             return null;
+    }
+    public void updateEmployeeSalary(String name, double salary) throws EmployeePayrollException {
+        int result = employeePayrollDBService.updateEmployeeData(name,salary);
+        EmployeePayrollData employeePayrollData = null;
+        if(result == 0)
+            throw new EmployeePayrollException(EmployeePayrollException.ExceptionType.UPDATE_FAIL, "Update Failed");
+        else
+            employeePayrollData = this.getEmployeePayrollData(name);
+        if(employeePayrollData!=null) {
+            employeePayrollData.salary = salary;
+        }
+    }
+
+
+    private EmployeePayrollData getEmployeePayrollData(String name) {
+        EmployeePayrollData employeePayrollData = this.employeePayrollList.stream()
+                .filter(employee->employee.name.equals(name))
+                .findFirst()
+                .orElse(null);
+        return employeePayrollData;
+    }
+
+
+    public boolean checkEmployeePayrollInSyncWithDB(String name) {
+        List<EmployeePayrollData> checkList = employeePayrollDBService.getEmployeePayrollData(name);
+        return checkList.get(0).equals(getEmployeePayrollData(name));
 
     }
 }
+
 
 
