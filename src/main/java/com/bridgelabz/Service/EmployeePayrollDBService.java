@@ -9,6 +9,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class EmployeePayrollDBService {
+    public enum StatementType{
+        PREPARED_STATEMENT,STATEMENT
+    }
     DBConnection dbConnection = new DBConnection();
     private PreparedStatement employeePayrollDataStatement;
     private static EmployeePayrollDBService employeePayrollDBService;
@@ -68,6 +71,16 @@ public class EmployeePayrollDBService {
         }
         return employeePayrollList;
     }
+    public int updateEmployeeData(String name, double salary,StatementType type) {
+        switch(type) {
+            case STATEMENT:
+                return this.updateDataUsingStatement(name, salary);
+            case PREPARED_STATEMENT:
+                return this.updateDataUsingPreparedStatement(name, salary);
+            default :
+                return 0;
+        }
+    }
 
     private void preparedStatementForEmployeeData() {
         try {
@@ -91,6 +104,18 @@ public class EmployeePayrollDBService {
             Statement statement = connection.createStatement();
             return statement.executeUpdate(sql);
         } catch(SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+    private int updateDataUsingPreparedStatement(String name,double salary) {
+        String sql = "UPDATE employeepayroll1 SET salary = ? WHERE NAME = ?";
+        try(Connection connection = dbConnection.getConnection();) {
+            PreparedStatement preparedStatementUpdate = connection.prepareStatement(sql);
+            preparedStatementUpdate.setDouble(1, salary);
+            preparedStatementUpdate.setString(2, name);
+            return preparedStatementUpdate.executeUpdate();
+        } catch (SQLException e) {
             e.printStackTrace();
         }
         return 0;

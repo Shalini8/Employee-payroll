@@ -12,9 +12,8 @@ public class DBConnection {
         String userName = "root";
         String password = "root";
         Connection connection;
-        System.out.println("Connecting to database: " + jdbcURL);
         connection = DriverManager.getConnection(jdbcURL, userName, password);
-        System.out.println("Connection successful: " + connection);
+        System.out.println("Connection successful");
         return connection;
     }
 }

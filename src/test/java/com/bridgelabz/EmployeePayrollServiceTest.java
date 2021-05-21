@@ -2,6 +2,7 @@ package com.bridgelabz;
 
 import com.bridgelabz.Exceptions.EmployeePayrollException;
 import com.bridgelabz.Model.EmployeePayrollData;
+import com.bridgelabz.Service.EmployeePayrollDBService;
 import com.bridgelabz.Service.EmployeePayrollService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -38,7 +39,15 @@ public class EmployeePayrollServiceTest {
     public void givenNewSalaryForEmployee_WhenUpdated_ShouldSyncWithDatabase() throws EmployeePayrollException {
         EmployeePayrollService employeePayrollService = new EmployeePayrollService();
         List<EmployeePayrollData> employeePayrollData = employeePayrollService.readData(EmployeePayrollService.IOService.DB_IO);
-        employeePayrollService.updateEmployeeSalary("Meena",3000000.00);
+        employeePayrollService.updateEmployeeSalary("Meena",3000000.00, EmployeePayrollDBService.StatementType.STATEMENT);
+        boolean result = employeePayrollService.checkEmployeePayrollInSyncWithDB("Meena");
+        assertTrue(result);
+    }
+    @Test
+    public void givenNewSalaryForEmployee_WhenUpdatedUsingPreparedStatement_ShouldSyncWithDatabase() throws EmployeePayrollException {
+        EmployeePayrollService employeePayrollService = new EmployeePayrollService();
+        List<EmployeePayrollData> employeePayrollData = employeePayrollService.readData(EmployeePayrollService.IOService.DB_IO);
+        employeePayrollService.updateEmployeeSalary("Meena",3000000.00, EmployeePayrollDBService.StatementType.PREPARED_STATEMENT);
         boolean result = employeePayrollService.checkEmployeePayrollInSyncWithDB("Meena");
         assertTrue(result);
     }

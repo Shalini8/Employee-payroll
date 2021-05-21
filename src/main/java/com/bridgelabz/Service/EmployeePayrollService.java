@@ -72,11 +72,12 @@ public class EmployeePayrollService {
         else
             return null;
     }
-    public void updateEmployeeSalary(String name, double salary) throws EmployeePayrollException {
-        int result = employeePayrollDBService.updateEmployeeData(name,salary);
+    public void updateEmployeeSalary(String name, double salary, EmployeePayrollDBService.StatementType type) throws EmployeePayrollException {
+        int result = employeePayrollDBService.updateEmployeeData(name,salary,type);
         EmployeePayrollData employeePayrollData = null;
         if(result == 0)
             throw new EmployeePayrollException(EmployeePayrollException.ExceptionType.UPDATE_FAIL, "Update Failed");
+
         else
             employeePayrollData = this.getEmployeePayrollData(name);
         if(employeePayrollData!=null) {
@@ -84,8 +85,7 @@ public class EmployeePayrollService {
         }
     }
 
-
-    private EmployeePayrollData getEmployeePayrollData(String name) {
+        private EmployeePayrollData getEmployeePayrollData(String name) {
         EmployeePayrollData employeePayrollData = this.employeePayrollList.stream()
                 .filter(employee->employee.name.equals(name))
                 .findFirst()
