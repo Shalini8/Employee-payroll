@@ -6,6 +6,7 @@ import com.bridgelabz.Service.EmployeePayrollDBService;
 import com.bridgelabz.Service.EmployeePayrollService;
 import org.junit.jupiter.api.Test;
 
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -15,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class EmployeePayrollServiceTest {
     @Test
-   public void given3EmployeeWhenWrittenToFileShouldMatch() {
+   public void given3EmployeeWhenWrittenToFileShouldMatchEmployeeEntries() {
         EmployeePayrollData[] arrayofEmps = {
                 new EmployeePayrollData(1,"shalini",1000000.0),
                 new EmployeePayrollData(2,"shyam",8000000.0),
@@ -66,6 +67,14 @@ public class EmployeePayrollServiceTest {
         System.out.println(averageSalaryByGender);
         assertTrue(averageSalaryByGender.get("M").equals( 32250.0000)&&
                 averageSalaryByGender.get("F").equals( 1416666.6667));
+    }
+    @Test
+    public void givenNewEmployee_WhenAdded_ShouldSyncWithDB() {
+        EmployeePayrollService employeePayrollService = new EmployeePayrollService();
+        employeePayrollService.readData(EmployeePayrollService.IOService.DB_IO);
+        employeePayrollService.addEmployeeToPayroll("Zoya",50000000.00, LocalDate.now(),"F");
+        boolean result =  employeePayrollService.checkEmployeePayrollInSyncWithDB("Zoya");
+        assertTrue(result);
     }
 
 
