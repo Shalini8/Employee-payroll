@@ -4,7 +4,6 @@ import com.bridgelabz.Exceptions.EmployeePayrollException;
 import com.bridgelabz.Model.EmployeePayrollData;
 import com.bridgelabz.Service.EmployeePayrollDBService;
 import com.bridgelabz.Service.EmployeePayrollService;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
@@ -51,4 +50,12 @@ public class EmployeePayrollServiceTest {
         boolean result = employeePayrollService.checkEmployeePayrollInSyncWithDB("Meena");
         assertTrue(result);
     }
+    @Test
+    public void givenDateRangeForEmployee_WhenRetrievedUsingStatement_ShouldReturnProperData() throws EmployeePayrollException {
+        EmployeePayrollService employeePayrollService = new EmployeePayrollService();
+        List<EmployeePayrollData> employeePayrollData = employeePayrollService.readData(EmployeePayrollService.IOService.DB_IO);
+        List<EmployeePayrollData> employeeDataInGivenDateRange = employeePayrollService.getEmployeesInDateRange("2020-03-04","2021-05-19");
+        assertEquals(5, employeeDataInGivenDateRange.size());
+    }
+
 }

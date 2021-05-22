@@ -9,6 +9,8 @@ import java.util.Scanner;
 
 public class EmployeePayrollService {
 
+
+
     public enum IOService {CONSOLE_IO, FILE_IO, DB_IO, REST_IO}
 
     public List<EmployeePayrollData> employeePayrollList;
@@ -99,6 +101,10 @@ public class EmployeePayrollService {
         return checkList.get(0).equals(getEmployeePayrollData(name));
 
     }
+    public List<EmployeePayrollData> getEmployeesInDateRange(String start, String end) {
+        return employeePayrollDBService.getEmployeesInGivenDateRangeDB(start,end);
+    }
+
 }
 
 
