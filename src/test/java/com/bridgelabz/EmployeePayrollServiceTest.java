@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -57,5 +58,15 @@ public class EmployeePayrollServiceTest {
         List<EmployeePayrollData> employeeDataInGivenDateRange = employeePayrollService.getEmployeesInDateRange("2020-03-04","2021-05-19");
         assertEquals(5, employeeDataInGivenDateRange.size());
     }
+    @Test
+    public void givenPayrollData_WhenAverageSalaryRetrievedByGender_ShouldReturnProperValue() {
+        EmployeePayrollService employeePayrollService = new EmployeePayrollService();
+        employeePayrollService.readData(EmployeePayrollService.IOService.DB_IO);
+        Map<String,Double> averageSalaryByGender  = employeePayrollService.readAverageSalaryByGender(EmployeePayrollService.IOService.DB_IO);
+        System.out.println(averageSalaryByGender);
+        assertTrue(averageSalaryByGender.get("M").equals( 32250.0000)&&
+                averageSalaryByGender.get("F").equals( 1416666.6667));
+    }
+
 
 }
