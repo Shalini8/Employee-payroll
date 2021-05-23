@@ -76,6 +76,4 @@ public class EmployeePayrollServiceTest {
         boolean result =  employeePayrollService.checkEmployeePayrollInSyncWithDB("Zoya");
         assertTrue(result);
     }
-
-
 }

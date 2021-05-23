@@ -31,3 +31,11 @@ mysql> select * from employeepayroll1;
 |  4 | Reena   |  450000 | 2021-05-19 | F      |
 |  7 | Shaan   |    4500 | 2021-05-02 | M      |
 +----+---------+---------+------------+--------+
+#UC8: Ability to add payrolldetails when new employee is added to the employeepayroll1;
+
+mysql> select * from payrolldetails;
++--------+-----------+------------+-------------+---------+----------+
+| emp_id | basic_pay | deductions | taxable_pay | tax     | net_pay  |
++--------+-----------+------------+-------------+---------+----------+
+|     13 |  50000000 |   10000000 |    40000000 | 4000000 | 46000000 |
++--------+-----------+------------+-------------+---------+----------+
