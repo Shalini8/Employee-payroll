@@ -4,10 +4,7 @@ import com.bridgelabz.Exceptions.EmployeePayrollException;
 import com.bridgelabz.Model.EmployeePayrollData;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Scanner;
+import java.util.*;
 
 public class EmployeePayrollService {
     public enum IOService {
@@ -32,16 +29,17 @@ public class EmployeePayrollService {
         this.employeePayrollList = employeePayrollList;
     }
 
-    public static void main(String[] args) {
-        List<EmployeePayrollData> employeePayrollList = new ArrayList<EmployeePayrollData>();
-        EmployeePayrollService employeePayrollService = new EmployeePayrollService(employeePayrollList);
-        Scanner consoleInputReader = new Scanner(System.in);
-        employeePayrollService.readEmployeeData(consoleInputReader);
-        employeePayrollService.writeEmployeeData(IOService.CONSOLE_IO);
-    }
+        public static void main(String[] args) {
+            List<EmployeePayrollData> employeePayrollList = new ArrayList<EmployeePayrollData>();
+            EmployeePayrollService employeePayrollService = new EmployeePayrollService(employeePayrollList);
+            Scanner consoleInputReader = new Scanner(System.in);
+            employeePayrollService.readEmployeeData(consoleInputReader);
+            employeePayrollService.writeEmployeeData(IOService.CONSOLE_IO);
+        }
 
 
-    public void readEmployeeData(Scanner consoleInputReader) {
+
+        public void readEmployeeData(Scanner consoleInputReader) {
         System.out.println("Enter employee ID : ");
         int id = Integer.parseInt(consoleInputReader.nextLine());
         System.out.println("Enter employee name : ");
@@ -68,7 +66,7 @@ public class EmployeePayrollService {
     public long countEntries(IOService ioService) {
         if (ioService.equals(IOService.FILE_IO))
             return new EmployeePayrollFileIOService().countEntries();
-        return 0;
+        return employeePayrollList.size();
     }
 
 
@@ -143,6 +141,39 @@ public class EmployeePayrollService {
     public void addEmployeeToPayroll(String name, double salary, LocalDate startDate, String gender) {
         employeePayrollList.add(employeePayrollDBService.addEmployeeToPayroll(name,salary,startDate,gender));
     }
-}
 
+
+    public void addEmployeesToPayroll(List<EmployeePayrollData> employeePayrollDataList) {
+        employeePayrollDataList.forEach(employeePayrollData->{
+            System.out.println("Employee being added: "+employeePayrollData.name);
+            this.addEmployeeToPayroll(employeePayrollData.name, employeePayrollData.salary,
+                    employeePayrollData.startDate, employeePayrollData.gender);
+            System.out.println("Employee added: "+employeePayrollData.name);
+        });
+        System.out.println(employeePayrollDataList);
+    }
+    public void addEmployeesToPayrollWithThreads(List<EmployeePayrollData> empList) {
+        Map<Integer,Boolean> employeeAdditionStatus = new HashMap<Integer, Boolean>();
+        empList.forEach(employeePayrollData -> {
+            Runnable task = () -> {
+                employeeAdditionStatus.put(employeePayrollData.hashCode(), false);
+                System.out.println("Employee being added:(threads) "+Thread.currentThread().getName());
+                this.addEmployeeToPayroll(employeePayrollData.name, employeePayrollData.salary,
+                        employeePayrollData.startDate, employeePayrollData.gender);
+                employeeAdditionStatus.put(employeePayrollData.hashCode(), true);
+                System.out.println("Employee added: (threads)"+Thread.currentThread().getName());
+            };
+            Thread thread = new Thread(task,employeePayrollData.name);
+            thread.start();
+        });
+        while(employeeAdditionStatus.containsValue(false)) {
+            try {
+                Thread.sleep(10);
+            }catch(InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        System.out.println(employeePayrollList);
+    }
+}
 

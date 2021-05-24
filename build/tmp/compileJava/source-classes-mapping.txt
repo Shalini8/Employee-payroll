@@ -11,11 +11,6 @@ com/bridgelabz/Connection/DBConnection.java
  com.bridgelabz.Connection.DBConnection
 com/bridgelabz/Model/EmployeePayrollData.java
  com.bridgelabz.Model.EmployeePayrollData
-com/bridgelabz/Utility/FileUtils.java
- com.bridgelabz.Utility.FileUtils
-com/bridgelabz/Utility/Java8WatchServiceExample.java
- com.bridgelabz.Utility.Java8WatchServiceExample
- com.bridgelabz.Utility.Java8WatchServiceExample$1
 com/bridgelabz/Service/EmployeePayrollDBServiceNormalised.java
  com.bridgelabz.Service.EmployeePayrollDBServiceNormalised
  com.bridgelabz.Service.EmployeePayrollDBServiceNormalised$1
@@ -23,3 +18,8 @@ com/bridgelabz/Service/EmployeePayrollService.java
  com.bridgelabz.Service.EmployeePayrollService
  com.bridgelabz.Service.EmployeePayrollService$IOService
  com.bridgelabz.Service.EmployeePayrollService$NormalisationType
+com/bridgelabz/Utility/Java8WatchServiceExample.java
+ com.bridgelabz.Utility.Java8WatchServiceExample
+ com.bridgelabz.Utility.Java8WatchServiceExample$1
+com/bridgelabz/Utility/FileUtils.java
+ com.bridgelabz.Utility.FileUtils

@@ -1,6 +1,7 @@
 package com.bridgelabz.Model;
 
 import java.time.LocalDate;
+import java.util.Objects;
 
 public class EmployeePayrollData {
     public int id;
@@ -29,6 +30,11 @@ public class EmployeePayrollData {
         this.companyId = companyId;
         this.department = department;
     }
+    public EmployeePayrollData(int id, String name, String gender, double salary, LocalDate startDate) {
+        this(id,name,salary,startDate);
+        this.gender = gender;
+    }
+
 
     public String[] getDepartment() {
         return department;
@@ -59,6 +65,11 @@ public class EmployeePayrollData {
         return id == that.id && Double.compare(that.salary,salary)==0 &&
                 name.equals(that.name);
     }
+    @Override
+    public int hashCode() {
+        return Objects.hash(id,name,gender,salary,startDate);
+    }
+
 
     public void printDepartments() {
         String departments[] = this.getDepartment();
