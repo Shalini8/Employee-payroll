@@ -59,3 +59,37 @@ Query OK, 1 row affected (0.26 sec)
 mysql> select * from payrolldetails;
 Empty set (0.03 sec)
 
+#UC9: ER DIAGRAM created department1 and employeedepartment1
+
+mysql> CREATE TABLE department1
+    -> (
+    -> dept_id         INT PRIMARY KEY,
+    -> dept_name       VARCHAR(50) NOT NULL
+    -> );
+Query OK, 0 rows affected (1.59 sec)
+
+mysql> CREATE TABLE employee_department1
+    -> (
+    ->  emp_id  INT REFERENCES employee(id),
+    ->  dept_id         INT REFERENCES department1(dept_id)
+    -> );
+Query OK, 0 rows affected (1.14 sec)
+
+mysql> describe employee_department1;
++---------+------+------+-----+---------+-------+
+| Field   | Type | Null | Key | Default | Extra |
++---------+------+------+-----+---------+-------+
+| emp_id  | int  | YES  |     | NULL    |       |
+| dept_id | int  | YES  |     | NULL    |       |
++---------+------+------+-----+---------+-------+
+
+
+mysql> describe department1;
++-----------+-------------+------+-----+---------+-------+
+| Field     | Type        | Null | Key | Default | Extra |
++-----------+-------------+------+-----+---------+-------+
+| dept_id   | int         | NO   | PRI | NULL    |       |
+| dept_name | varchar(50) | NO   |     | NULL    |       |
++-----------+-------------+------+-----+---------+-------+
+
+

@@ -1,7 +1,7 @@
 package com.bridgelabz.Exceptions;
 
-    public class EmployeePayrollException extends Exception {
-        public enum ExceptionType{
+public class EmployeePayrollException extends Exception {
+    public enum ExceptionType{
             UPDATE_FAIL
         }
         public ExceptionType type;

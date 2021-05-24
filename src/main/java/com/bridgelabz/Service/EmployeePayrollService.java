@@ -10,16 +10,21 @@ import java.util.Map;
 import java.util.Scanner;
 
 public class EmployeePayrollService {
+    public enum IOService {
+        CONSOLE_IO, FILE_IO, DB_IO, REST_IO
+    }
 
-
-
-    public enum IOService {CONSOLE_IO, FILE_IO, DB_IO, REST_IO}
+    public enum NormalisationType{
+        NORMALISED,DENORMALISED
+    }
 
     public List<EmployeePayrollData> employeePayrollList;
     private EmployeePayrollDBService employeePayrollDBService;
+    private EmployeePayrollDBServiceNormalised employeePayrollDBServiceNormalised;
 
     public EmployeePayrollService() {
         employeePayrollDBService = EmployeePayrollDBService.getInstance();
+        employeePayrollDBServiceNormalised = EmployeePayrollDBServiceNormalised.getInstance();
     }
 
     public EmployeePayrollService(List<EmployeePayrollData> employeePayrollList) {
@@ -27,38 +32,38 @@ public class EmployeePayrollService {
         this.employeePayrollList = employeePayrollList;
     }
 
-
     public static void main(String[] args) {
-        System.out.println("Welcome to Employee Payroll Problem Java IO");
-        ArrayList<EmployeePayrollData> employeePayrollList = new ArrayList<>();
+        List<EmployeePayrollData> employeePayrollList = new ArrayList<EmployeePayrollData>();
         EmployeePayrollService employeePayrollService = new EmployeePayrollService(employeePayrollList);
         Scanner consoleInputReader = new Scanner(System.in);
-        employeePayrollService.readEmployeePayrollData(consoleInputReader);
-        employeePayrollService.writeEmployeePayrollData(IOService.FILE_IO);
+        employeePayrollService.readEmployeeData(consoleInputReader);
+        employeePayrollService.writeEmployeeData(IOService.CONSOLE_IO);
     }
 
-    private void readEmployeePayrollData(Scanner consoleInputReader) {
-        System.out.println("Enter Employee ID: ");
-        int id = consoleInputReader.nextInt();
-        System.out.println("Enter  Employee Name: ");
-        String name = consoleInputReader.next();
-        System.out.println("Enter Employee Salary: ");
-        double salary = consoleInputReader.nextDouble();
+
+    public void readEmployeeData(Scanner consoleInputReader) {
+        System.out.println("Enter employee ID : ");
+        int id = Integer.parseInt(consoleInputReader.nextLine());
+        System.out.println("Enter employee name : ");
+        String name = consoleInputReader.nextLine();
+        System.out.println("Enter employee salary : ");
+        double salary = Double.parseDouble(consoleInputReader.nextLine());
         employeePayrollList.add(new EmployeePayrollData(id, name, salary));
     }
 
-    public void writeEmployeePayrollData(IOService ioService) {
+
+    public void writeEmployeeData(IOService ioService) {
         if (ioService.equals(IOService.CONSOLE_IO))
-            System.out.println("\nWriting Employee Payroll Roaster to Console\n" + employeePayrollList);
+            System.out.println("Writing Employee Payroll Data to Console\n" + employeePayrollList);
         else if (ioService.equals(IOService.FILE_IO))
             new EmployeePayrollFileIOService().writeData(employeePayrollList);
-
     }
+
 
     public void printData(IOService ioService) {
-        if (ioService.equals(IOService.FILE_IO))
-            new EmployeePayrollFileIOService().printData();
+        new EmployeePayrollFileIOService().printData();
     }
+
 
     public long countEntries(IOService ioService) {
         if (ioService.equals(IOService.FILE_IO))
@@ -66,22 +71,35 @@ public class EmployeePayrollService {
         return 0;
     }
 
-    public List<EmployeePayrollData> readData(IOService ioService) {
+
+    public List<EmployeePayrollData> readData(IOService ioService,NormalisationType normalisationType) {
         if(ioService.equals(IOService.FILE_IO))
             return new EmployeePayrollFileIOService().readData();
         else if(ioService.equals(IOService.DB_IO)) {
-            employeePayrollList = employeePayrollDBService.readData();
+            if(normalisationType.equals(NormalisationType.DENORMALISED)) {
+                employeePayrollList = employeePayrollDBService.readData();
+            }
+            else if(normalisationType.equals(NormalisationType.NORMALISED)) {
+                employeePayrollList = employeePayrollDBServiceNormalised.readData();
+            }
             return employeePayrollList;
         }
         else
             return null;
     }
-    public void updateEmployeeSalary(String name, double salary, EmployeePayrollDBService.StatementType type) throws EmployeePayrollException {
-        int result = employeePayrollDBService.updateEmployeeData(name,salary,type);
+
+
+    public void updateEmployeeSalary(String name, double salary, EmployeePayrollDBService.StatementType type, NormalisationType normalisationType) throws EmployeePayrollException {
+        int result = 0;
+        if(normalisationType.equals(NormalisationType.DENORMALISED)) {
+            result = employeePayrollDBService.updateEmployeeData(name,salary,type);
+        }
+        else if(normalisationType.equals(NormalisationType.NORMALISED)) {
+            result = employeePayrollDBServiceNormalised.updateEmployeeData(name,salary,type);
+        }
         EmployeePayrollData employeePayrollData = null;
         if(result == 0)
             throw new EmployeePayrollException(EmployeePayrollException.ExceptionType.UPDATE_FAIL, "Update Failed");
-
         else
             employeePayrollData = this.getEmployeePayrollData(name);
         if(employeePayrollData!=null) {
@@ -89,7 +107,8 @@ public class EmployeePayrollService {
         }
     }
 
-        private EmployeePayrollData getEmployeePayrollData(String name) {
+
+    private EmployeePayrollData getEmployeePayrollData(String name) {
         EmployeePayrollData employeePayrollData = this.employeePayrollList.stream()
                 .filter(employee->employee.name.equals(name))
                 .findFirst()
@@ -98,23 +117,32 @@ public class EmployeePayrollService {
     }
 
 
-    public boolean checkEmployeePayrollInSyncWithDB(String name) {
-        List<EmployeePayrollData> checkList = employeePayrollDBService.getEmployeePayrollData(name);
+    public boolean checkEmployeePayrollInSyncWithDB(String name,NormalisationType normalisationType) {
+        List<EmployeePayrollData> checkList = null;
+        if(normalisationType.equals(NormalisationType.DENORMALISED))
+            checkList = employeePayrollDBService.getEmployeePayrollData(name);
+        else if(normalisationType.equals(NormalisationType.NORMALISED))
+            checkList = employeePayrollDBServiceNormalised.getEmployeePayrollData(name);
         return checkList.get(0).equals(getEmployeePayrollData(name));
 
     }
-    public List<EmployeePayrollData> getEmployeesInDateRange(String start, String end) {
-        return employeePayrollDBService.getEmployeesInGivenDateRangeDB(start,end);
+
+
+    public List<EmployeePayrollData> getEmployeesInDateRange(String date1, String date2) {
+        List<EmployeePayrollData> employeesInGivenDateRangeList = employeePayrollDBService.getEmployeesInGivenDateRangeDB(date1,date2);
+        return employeesInGivenDateRangeList;
     }
+
+
     public Map<String, Double> readAverageSalaryByGender(IOService ioService) {
         if(ioService.equals(IOService.DB_IO))
             return employeePayrollDBService.getAverageSalaryByGender();
         return null;
     }
-    public void addEmployeeToPayroll(String name, double salary, LocalDate start, String gender) {
-        employeePayrollList.add(employeePayrollDBService.addEmployeeToPayroll(name,salary,start,gender));
+
+    public void addEmployeeToPayroll(String name, double salary, LocalDate startDate, String gender) {
+        employeePayrollList.add(employeePayrollDBService.addEmployeeToPayroll(name,salary,startDate,gender));
     }
 }
-
 
 

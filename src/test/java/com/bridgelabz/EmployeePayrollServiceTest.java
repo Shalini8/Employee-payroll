@@ -25,7 +25,7 @@ public class EmployeePayrollServiceTest {
         };
         EmployeePayrollService employeePayrollService;
         employeePayrollService = new EmployeePayrollService(Arrays.asList(arrayofEmps));
-        employeePayrollService.writeEmployeePayrollData(EmployeePayrollService.IOService.FILE_IO);
+        employeePayrollService.writeEmployeeData(EmployeePayrollService.IOService.FILE_IO);
         employeePayrollService.printData(EmployeePayrollService.IOService.FILE_IO);
         long entries = employeePayrollService.countEntries(EmployeePayrollService.IOService.FILE_IO);
          assertEquals(3,entries);
@@ -33,36 +33,36 @@ public class EmployeePayrollServiceTest {
     @Test
     public void givenEmployeePayrollInDB_WhenRetrieved_ShouldMatchEmployeeCount() {
         EmployeePayrollService employeePayrollService = new EmployeePayrollService();
-        List<EmployeePayrollData> employeePayrollData = employeePayrollService.readData(EmployeePayrollService.IOService.DB_IO);
+        List<EmployeePayrollData> employeePayrollData = employeePayrollService.readData(EmployeePayrollService.IOService.DB_IO, EmployeePayrollService.NormalisationType.DENORMALISED);
         assertEquals(5, employeePayrollData.size());
     }
     @Test
     public void givenNewSalaryForEmployee_WhenUpdated_ShouldSyncWithDatabase() throws EmployeePayrollException {
         EmployeePayrollService employeePayrollService = new EmployeePayrollService();
-        List<EmployeePayrollData> employeePayrollData = employeePayrollService.readData(EmployeePayrollService.IOService.DB_IO);
-        employeePayrollService.updateEmployeeSalary("Meena",3000000.00, EmployeePayrollDBService.StatementType.STATEMENT);
-        boolean result = employeePayrollService.checkEmployeePayrollInSyncWithDB("Meena");
+        List<EmployeePayrollData> employeePayrollData = employeePayrollService.readData(EmployeePayrollService.IOService.DB_IO, EmployeePayrollService.NormalisationType.DENORMALISED);
+        employeePayrollService.updateEmployeeSalary("Meena",3000000.00, EmployeePayrollDBService.StatementType.STATEMENT, EmployeePayrollService.NormalisationType.DENORMALISED);
+        boolean result = employeePayrollService.checkEmployeePayrollInSyncWithDB("Meena", EmployeePayrollService.NormalisationType.DENORMALISED);
         assertTrue(result);
     }
     @Test
     public void givenNewSalaryForEmployee_WhenUpdatedUsingPreparedStatement_ShouldSyncWithDatabase() throws EmployeePayrollException {
         EmployeePayrollService employeePayrollService = new EmployeePayrollService();
-        List<EmployeePayrollData> employeePayrollData = employeePayrollService.readData(EmployeePayrollService.IOService.DB_IO);
-        employeePayrollService.updateEmployeeSalary("Meena",3000000.00, EmployeePayrollDBService.StatementType.PREPARED_STATEMENT);
-        boolean result = employeePayrollService.checkEmployeePayrollInSyncWithDB("Meena");
+        List<EmployeePayrollData> employeePayrollData = employeePayrollService.readData(EmployeePayrollService.IOService.DB_IO, EmployeePayrollService.NormalisationType.DENORMALISED);
+        employeePayrollService.updateEmployeeSalary("Meena",3000000.00, EmployeePayrollDBService.StatementType.PREPARED_STATEMENT, EmployeePayrollService.NormalisationType.DENORMALISED);
+        boolean result = employeePayrollService.checkEmployeePayrollInSyncWithDB("Meena", EmployeePayrollService.NormalisationType.DENORMALISED);
         assertTrue(result);
     }
     @Test
     public void givenDateRangeForEmployee_WhenRetrievedUsingStatement_ShouldReturnProperData() throws EmployeePayrollException {
         EmployeePayrollService employeePayrollService = new EmployeePayrollService();
-        List<EmployeePayrollData> employeePayrollData = employeePayrollService.readData(EmployeePayrollService.IOService.DB_IO);
+        List<EmployeePayrollData> employeePayrollData = employeePayrollService.readData(EmployeePayrollService.IOService.DB_IO, EmployeePayrollService.NormalisationType.DENORMALISED);
         List<EmployeePayrollData> employeeDataInGivenDateRange = employeePayrollService.getEmployeesInDateRange("2020-03-04","2021-05-19");
         assertEquals(5, employeeDataInGivenDateRange.size());
     }
     @Test
     public void givenPayrollData_WhenAverageSalaryRetrievedByGender_ShouldReturnProperValue() {
         EmployeePayrollService employeePayrollService = new EmployeePayrollService();
-        employeePayrollService.readData(EmployeePayrollService.IOService.DB_IO);
+        employeePayrollService.readData(EmployeePayrollService.IOService.DB_IO, EmployeePayrollService.NormalisationType.DENORMALISED);
         Map<String,Double> averageSalaryByGender  = employeePayrollService.readAverageSalaryByGender(EmployeePayrollService.IOService.DB_IO);
         System.out.println(averageSalaryByGender);
         assertTrue(averageSalaryByGender.get("M").equals( 32250.0000)&&
@@ -71,9 +71,19 @@ public class EmployeePayrollServiceTest {
     @Test
     public void givenNewEmployee_WhenAdded_ShouldSyncWithDB() {
         EmployeePayrollService employeePayrollService = new EmployeePayrollService();
-        employeePayrollService.readData(EmployeePayrollService.IOService.DB_IO);
+        employeePayrollService.readData(EmployeePayrollService.IOService.DB_IO, EmployeePayrollService.NormalisationType.NORMALISED);
         employeePayrollService.addEmployeeToPayroll("Zoya",50000000.00, LocalDate.now(),"F");
-        boolean result =  employeePayrollService.checkEmployeePayrollInSyncWithDB("Zoya");
+        boolean result =  employeePayrollService.checkEmployeePayrollInSyncWithDB("Zoya", EmployeePayrollService.NormalisationType.NORMALISED);
         assertTrue(result);
+    }
+    @Test
+    public void givenEmployeePayrollInNormalisedDB_WhenRetrieved_ShouldMatchEmployeeCount() {
+        EmployeePayrollService employeePayrollService = new EmployeePayrollService();
+        List<EmployeePayrollData> employeePayrollData = employeePayrollService.readData(EmployeePayrollService.IOService.DB_IO, EmployeePayrollService.NormalisationType.NORMALISED);
+        System.out.println(employeePayrollData);
+        for(EmployeePayrollData emp : employeePayrollData ) {
+            emp.printDepartments();
+        }
+        assertEquals(3, employeePayrollData.size());
     }
 }
